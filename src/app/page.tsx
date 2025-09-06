@@ -8,6 +8,7 @@ import SectorCard from '@/components/SectorCard';
 import MarketHeatmap from '@/components/MarketHeatmap';
 import SectorTable from '@/components/SectorTable';
 import StockTable from '@/components/StockTable';
+import MarketIndices from '@/components/MarketIndices';
 
 interface Stock {
   symbol: string;
@@ -141,6 +142,9 @@ export default function Home() {
           </div>
         </Link>
       </div>
+
+      {/* Market Indices */}
+      <MarketIndices />
 
       {/* Market Heatmaps Section */}
       <div className="flex flex-col xl:flex-row gap-8 mb-16 justify-center">
