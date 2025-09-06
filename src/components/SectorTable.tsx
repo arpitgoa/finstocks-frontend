@@ -94,14 +94,14 @@ export default function SectorTable() {
 
   const SortableHeader = ({ column, children }: { column: 'name' | 'change' | 'signal', children: React.ReactNode }) => (
     <th 
-      className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-300 cursor-pointer hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-colors"
+      className="text-left py-1.5 px-2 font-medium text-gray-600 dark:text-gray-300 cursor-pointer hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-colors text-xs"
       onClick={() => handleSort(column)}
     >
       <div className="flex items-center justify-between">
         {children}
         <div className="flex flex-col">
-          <ChevronUp className={`h-3 w-3 ${sortBy === column && sortOrder === 'asc' ? 'text-blue-600' : 'text-gray-400'}`} />
-          <ChevronDown className={`h-3 w-3 ${sortBy === column && sortOrder === 'desc' ? 'text-blue-600' : 'text-gray-400'}`} />
+          <ChevronUp className={`h-2.5 w-2.5 ${sortBy === column && sortOrder === 'asc' ? 'text-blue-600' : 'text-gray-400'}`} />
+          <ChevronDown className={`h-2.5 w-2.5 ${sortBy === column && sortOrder === 'desc' ? 'text-blue-600' : 'text-gray-400'}`} />
         </div>
       </div>
     </th>
@@ -109,7 +109,7 @@ export default function SectorTable() {
 
   if (loading) {
     return (
-      <div className="w-125 h-125 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
+      <div className="w-120 h-112 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">Top Sectors</h3>
         </div>
@@ -123,16 +123,16 @@ export default function SectorTable() {
   }
 
   return (
-    <div className="w-125 h-125 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Top Sectors</h3>
+    <div className="w-full max-w-sm mx-auto xl:max-w-none xl:w-120 xl:h-112 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white">Top Sectors</h3>
         
         <div className="flex bg-gray-100/50 dark:bg-gray-700/50 rounded-lg p-0.5">
           {(['1d', '1w', '1m', 'ytd'] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+              className={`px-1 py-0.5 text-xs font-medium rounded transition-all ${
                 period === p
                   ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400'
@@ -144,7 +144,7 @@ export default function SectorTable() {
         </div>
       </div>
 
-      <div className="h-112 overflow-y-auto">
+      <div className="h-64 xl:h-96 overflow-y-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm">
             <tr>

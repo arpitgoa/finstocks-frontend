@@ -147,10 +147,16 @@ export default function Home() {
       <MarketIndices />
 
       {/* Market Heatmaps Section */}
-      <div className="flex flex-col xl:flex-row gap-8 mb-16 justify-center">
-        <MarketHeatmap />
-        <SectorTable />
-        <StockTable />
+      <div className="flex flex-col xl:flex-row gap-4 xl:gap-8 mb-16 px-4 max-w-full overflow-hidden justify-center">
+        <div className="w-full xl:w-auto flex-shrink-0 min-w-0">
+          <MarketHeatmap />
+        </div>
+        <div className="w-full xl:w-auto flex-shrink-0 min-w-0">
+          <SectorTable />
+        </div>
+        <div className="w-full xl:w-auto flex-shrink-0 min-w-0">
+          <StockTable />
+        </div>
       </div>
 
       {/* Featured Stocks */}

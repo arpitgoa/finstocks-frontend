@@ -138,9 +138,25 @@ export default function MarketIndices() {
     const avgVolume30Day = volumes.reduce((a, b) => a + b, 0) / volumes.length;
     const maxRelativeVolume = Math.max(...volumes.map(v => v / avgVolume30Day));
     
-    const chartWidth = 280;
-    const chartHeight = 100;
-    const margin = { top: 10, right: 30, bottom: 25, left: 40 }; // Increased right margin
+    // Responsive chart dimensions
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const isTablet = typeof window !== 'undefined' && window.innerWidth < 1280;
+    
+    let chartWidth, chartHeight, margin;
+    if (isMobile) {
+      chartWidth = 150;
+      chartHeight = 60;
+      margin = { top: 8, right: 20, bottom: 20, left: 25 };
+    } else if (isTablet) {
+      chartWidth = 200;
+      chartHeight = 80;
+      margin = { top: 10, right: 25, bottom: 22, left: 30 };
+    } else {
+      chartWidth = 300;
+      chartHeight = 120;
+      margin = { top: 12, right: 35, bottom: 25, left: 45 };
+    }
+    
     const plotWidth = chartWidth - margin.left - margin.right;
     const plotHeight = chartHeight - margin.top - margin.bottom;
     
@@ -367,15 +383,15 @@ export default function MarketIndices() {
 
   if (loading) {
     return (
-      <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Market Indices</h2>
-        <div className="grid grid-cols-4 gap-8 justify-center">
+      <div className="mb-16 px-4">
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6 text-center">Market Indices</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-8 max-w-full overflow-hidden">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 animate-pulse w-full">
-              <div className="text-center mb-4">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-48"></div>
+            <div key={i} className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-lg lg:rounded-xl p-2 lg:p-4 border border-gray-200/50 dark:border-gray-700/50 animate-pulse w-full min-w-0">
+              <div className="text-center mb-2 lg:mb-4">
+                <div className="h-3 lg:h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-24 lg:w-48"></div>
               </div>
-              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-16 lg:h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
             </div>
           ))}
         </div>
@@ -384,9 +400,9 @@ export default function MarketIndices() {
   }
 
   return (
-    <div className="mb-16">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Market Indices</h2>
-      <div className="grid grid-cols-4 gap-8 justify-center">
+    <div className="mb-16 px-4">
+      <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-6 text-center">Market Indices</h2>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 xl:gap-8 max-w-full overflow-hidden justify-items-center">
         {indices.map((index) => {
           const isPositive = index.change >= 0;
           
@@ -394,20 +410,25 @@ export default function MarketIndices() {
             <Link
               key={index.symbol}
               href={`/etfs/${index.symbol}`}
-              className="group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-200 card-hover w-full"
+              className="group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-lg lg:rounded-xl p-2 lg:p-4 xl:p-6 border border-gray-200/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-200 card-hover w-full max-w-xs lg:max-w-sm xl:max-w-none min-w-0"
             >
               {/* Compact Single Line Header */}
-              <div className="text-center mb-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  <span className="font-bold text-gray-900 dark:text-white">{index.symbol}</span> • {index.name} • ${index.price.toFixed(0)} • 
-                  <span className={`font-semibold ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {isPositive ? '+' : ''}{index.change.toFixed(2)}
+              <div className="text-center mb-2 lg:mb-4">
+                <div className="text-xs lg:text-sm xl:text-base text-gray-600 dark:text-gray-400 mb-1 truncate">
+                  <span className="font-bold text-gray-900 dark:text-white">{index.symbol}</span>
+                  <span className="hidden sm:inline"> • {index.name}</span>
+                  <br className="sm:hidden" />
+                  <span className="text-xs lg:text-sm">${index.price.toFixed(0)} • </span>
+                  <span className={`font-semibold text-xs lg:text-sm ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {isPositive ? '+' : ''}{index.change.toFixed(1)}
                   </span>
                 </div>
               </div>
               
               {/* Main Chart */}
-              <CandlestickChart data={index.candleData} isPositive={isPositive} />
+              <div className="overflow-hidden">
+                <CandlestickChart data={index.candleData} isPositive={isPositive} />
+              </div>
             </Link>
           );
         })}

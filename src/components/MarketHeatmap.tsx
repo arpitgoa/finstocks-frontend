@@ -117,11 +117,11 @@ export default function MarketHeatmap() {
 
   if (loading) {
     return (
-      <div className="w-125 h-125 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
+      <div className="w-full max-w-sm mx-auto xl:max-w-none xl:w-120 xl:h-112 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">Market Heatmap</h3>
         </div>
-        <div className="grid grid-cols-4 gap-1 h-112">
+        <div className="grid grid-cols-4 gap-1 h-64 xl:h-96">
           {Array.from({ length: 16 }).map((_, i) => (
             <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
           ))}
@@ -131,9 +131,9 @@ export default function MarketHeatmap() {
   }
 
   return (
-    <div className="w-125 h-125 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Market Heatmap</h3>
+    <div className="w-full max-w-sm mx-auto xl:max-w-none xl:w-120 xl:h-112 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50">
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white">Market Heatmap</h3>
         
         {/* Compact Period Selector */}
         <div className="flex bg-gray-100/50 dark:bg-gray-700/50 rounded-lg p-0.5">
@@ -141,7 +141,7 @@ export default function MarketHeatmap() {
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+              className={`px-1 py-0.5 text-xs font-medium rounded transition-all ${
                 period === p
                   ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400'
@@ -154,7 +154,7 @@ export default function MarketHeatmap() {
       </div>
 
       {/* Compact Grid */}
-      <div className="grid grid-cols-4 gap-1 h-112 overflow-hidden">
+      <div className="grid grid-cols-4 gap-1 h-64 xl:h-96 overflow-hidden">
         {tiles.map((tile) => {
           const colors = getPerformanceColor(tile.performance);
           const sizeClass = getSizeClass(tile.size);
