@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import SideNav from "@/components/SideNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -41,10 +42,13 @@ export default function RootLayout({
               <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
               
               <div className="relative z-10">
-                <Navbar />
-                <main className="min-h-screen">
-                  {children}
-                </main>
+                <SideNav />
+                <div className="ml-64">
+                  <Navbar />
+                  <main className="min-h-screen">
+                    {children}
+                  </main>
+                </div>
               </div>
             </div>
           </ThemeProvider>
