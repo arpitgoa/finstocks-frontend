@@ -1,10 +1,7 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, BarChart3 } from 'lucide-react';
 import StockCard from '@/components/StockCard';
-import SectorCard from '@/components/SectorCard';
 import MarketHeatmap from '@/components/MarketHeatmap';
 import SectorTable from '@/components/SectorTable';
 import StockTable from '@/components/StockTable';
@@ -17,44 +14,51 @@ interface Stock {
   market_cap: number | null;
 }
 
-interface Sector {
-  name: string;
-  performance_1d: number;
-  performance_1w: number;
-  performance_1m: number;
+// Loading skeleton component
+function LoadingSkeleton() {
+  return (
+    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 animate-pulse">
+      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+      <div className="space-y-3">
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+      </div>
+    </div>
+  );
 }
 
-export default function Home() {
-  const [stocks, setStocks] = useState<Stock[]>([]);
-  const [sectors, setSectors] = useState<Sector[]>([]);
-  const [loading, setLoading] = useState(true);
+// Server-side data fetching - just the essential data
+async function getHomeData() {
+  const startTime = Date.now();
+  try {
+    const [stocksRes, sectorsRes] = await Promise.all([
+      fetch('http://localhost:8000/api/screener', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 6 }),
+        cache: 'no-store'
+      }),
+      fetch('http://localhost:8000/api/sectors/top-performers?limit=4', {
+        cache: 'no-store'
+      })
+    ]);
+    
+    const stocks = await stocksRes.json();
+    const sectors = await sectorsRes.json();
+    
+    const endTime = Date.now();
+    console.log(`🚀 Server data fetch took: ${endTime - startTime}ms`);
+    
+    return { stocks, sectors };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return { stocks: [], sectors: [] };
+  }
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [stocksRes, sectorsRes] = await Promise.all([
-          fetch('http://localhost:8000/api/screener', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ limit: 6 })
-          }),
-          fetch('http://localhost:8000/api/sectors/top-performers?limit=4')
-        ]);
-        
-        const stocksData = await stocksRes.json();
-        const sectorsData = await sectorsRes.json();
-        
-        setStocks(stocksData);
-        setSectors(sectorsData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+export default async function Home() {
+  const { stocks, sectors } = await getHomeData();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -143,39 +147,37 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Market Indices */}
-      <MarketIndices />
+      {/* Market Indices with Lazy Loading */}
+      <Suspense fallback={<LoadingSkeleton />}>
+        <MarketIndices />
+      </Suspense>
 
-      {/* Market Heatmaps Section */}
+      {/* Market Heatmaps Section with Lazy Loading */}
       <div className="flex flex-col xl:flex-row gap-4 xl:gap-8 mb-16 px-4 max-w-full overflow-hidden justify-center">
         <div className="w-full xl:w-auto flex-shrink-0 min-w-0">
-          <MarketHeatmap />
+          <Suspense fallback={<LoadingSkeleton />}>
+            <MarketHeatmap />
+          </Suspense>
         </div>
         <div className="w-full xl:w-auto flex-shrink-0 min-w-0">
-          <SectorTable />
+          <Suspense fallback={<LoadingSkeleton />}>
+            <SectorTable />
+          </Suspense>
         </div>
         <div className="w-full xl:w-auto flex-shrink-0 min-w-0">
-          <StockTable />
+          <Suspense fallback={<LoadingSkeleton />}>
+            <StockTable />
+          </Suspense>
         </div>
       </div>
 
-      {/* Featured Stocks */}
+      {/* Featured Stocks - Loads instantly with SSR */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Featured Stocks</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              </div>
-            ))
-          ) : (
-            stocks.map((stock) => (
-              <StockCard key={stock.symbol} stock={stock} />
-            ))
-          )}
+          {stocks.map((stock) => (
+            <StockCard key={stock.symbol} stock={stock} />
+          ))}
         </div>
       </div>
     </div>
