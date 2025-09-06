@@ -1,26 +1,13 @@
 import Link from 'next/link';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-
-interface Stock {
-  symbol: string;
-  name: string;
-  sector: string;
-  market_cap: number | null;
-}
+import { formatMarketCap, getPerformanceColor } from '@/lib/utils';
+import type { Stock } from '@/lib/types';
 
 interface StockCardProps {
   stock: Stock;
 }
 
 export default function StockCard({ stock }: StockCardProps) {
-  const formatMarketCap = (marketCap: number | null) => {
-    if (!marketCap) return 'N/A';
-    if (marketCap >= 1e12) return `$${(marketCap / 1e12).toFixed(1)}T`;
-    if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(1)}B`;
-    if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(1)}M`;
-    return `$${marketCap.toLocaleString()}`;
-  };
-
   // Mock price change for demo
   const priceChange = Math.random() > 0.5 ? Math.random() * 5 : -Math.random() * 5;
   const isPositive = priceChange >= 0;
@@ -33,7 +20,7 @@ export default function StockCard({ stock }: StockCardProps) {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{stock.symbol}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{stock.name}</p>
           </div>
-          <div className={`flex items-center ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+          <div className={`flex items-center ${getPerformanceColor(priceChange)}`}>
             {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
             <span className="ml-1 text-sm font-medium">
               {isPositive ? '+' : ''}{priceChange.toFixed(2)}%

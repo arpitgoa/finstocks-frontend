@@ -1,76 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Search, Menu, X, TrendingUp } from 'lucide-react';
+import { Menu, X, TrendingUp, Sun, Moon, Monitor } from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+import SearchDropdown from './SearchDropdown';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      // Check if it looks like a stock symbol (all caps, short)
-      if (searchTerm.match(/^[A-Z]{1,5}$/)) {
-        router.push(`/stocks/${searchTerm.toUpperCase()}`);
-      } else {
-        // Otherwise go to stocks page with search
-        router.push(`/stocks?search=${encodeURIComponent(searchTerm)}`);
-      }
-      setSearchTerm('');
-    }
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ThemeIcon = !mounted ? Monitor : theme === 'dark' ? Sun : theme === 'light' ? Moon : Monitor;
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="p-2 bg-blue-600 rounded-lg">
+            <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg">
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">FinStocks</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              FinStocks
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/stocks" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+            <Link href="/stocks" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               Stocks
             </Link>
-            <Link href="/etfs" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+            <Link href="/etfs" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               ETFs
             </Link>
-            <Link href="/sectors" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+            <Link href="/sectors" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               Sectors
             </Link>
-            <Link href="/screener" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+            <Link href="/screener" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               Screener
             </Link>
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center">
-            <form onSubmit={handleSearch} className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search stocks, ETFs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </form>
+          {/* Search Bar & Theme Toggle */}
+          <div className="hidden md:flex items-center space-x-4">
+            <SearchDropdown className="w-64" />
+            
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 rounded-xl bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-all"
+            >
+              <ThemeIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            </button>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-2">
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 rounded-xl bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-all"
+            >
+              <ThemeIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-2"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -79,31 +78,22 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="md:hidden py-4 border-t border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
             <div className="flex flex-col space-y-4">
-              <Link href="/stocks" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+              <Link href="/stocks" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                 Stocks
               </Link>
-              <Link href="/etfs" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+              <Link href="/etfs" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                 ETFs
               </Link>
-              <Link href="/sectors" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+              <Link href="/sectors" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                 Sectors
               </Link>
-              <Link href="/screener" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+              <Link href="/screener" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                 Screener
               </Link>
               <div className="pt-4">
-                <form onSubmit={handleSearch} className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search stocks, ETFs..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </form>
+                <SearchDropdown className="w-full" />
               </div>
             </div>
           </div>
