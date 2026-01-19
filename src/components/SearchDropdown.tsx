@@ -48,14 +48,21 @@ export default function SearchDropdown({ placeholder = "Search stocks, ETFs...",
         const stocksData = await stocksRes.json();
         const etfsData = await etfsRes.json();
 
-        const stockResults: SearchResult[] = stocksData.map((stock: any) => ({
+        console.log('SearchDropdown Stocks API Response:', stocksData); // Debug log
+        console.log('SearchDropdown ETFs API Response:', etfsData); // Debug log
+
+        // Ensure both are arrays
+        const stocksArray = Array.isArray(stocksData) ? stocksData : [];
+        const etfsArray = Array.isArray(etfsData) ? etfsData : [];
+
+        const stockResults: SearchResult[] = stocksArray.map((stock: any) => ({
           symbol: stock.symbol,
           name: stock.name,
           type: 'stock' as const,
           sector: stock.sector
         }));
 
-        const etfResults: SearchResult[] = etfsData.map((etf: any) => ({
+        const etfResults: SearchResult[] = etfsArray.map((etf: any) => ({
           symbol: etf.symbol,
           name: etf.name,
           type: 'etf' as const,

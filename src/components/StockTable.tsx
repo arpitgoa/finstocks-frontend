@@ -41,7 +41,18 @@ export default function StockTable() {
         
         const data = await response.json();
         
-        const stockData: StockData[] = data.map((stock: any) => {
+        console.log('StockTable API Response:', data); // Debug log
+        
+        // Ensure data is an array
+        const stocksArray = Array.isArray(data) ? data : [];
+        
+        if (stocksArray.length === 0) {
+          console.warn('No stocks data received from StockTable API');
+          setStocks([]);
+          return;
+        }
+        
+        const stockData: StockData[] = stocksArray.map((stock: any) => {
           const change = category === 'gainers' ? Math.random() * 20 + 5 :
                         category === 'losers' ? -(Math.random() * 15 + 3) :
                         (Math.random() - 0.5) * 10;

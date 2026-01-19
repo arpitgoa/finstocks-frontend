@@ -46,7 +46,12 @@ export default function MarketHeatmap() {
         const stocksData: Stock[] = await stocksRes.json();
         const sectorsData: Sector[] = await sectorsRes.json();
 
-        const sectorPerformance = sectorsData.reduce((acc, sector) => {
+        console.log('MarketHeatmap Sectors API Response:', sectorsData); // Debug log
+
+        // Ensure sectorsData is an array
+        const sectorsArray = Array.isArray(sectorsData) ? sectorsData : [];
+
+        const sectorPerformance = sectorsArray.reduce((acc, sector) => {
           acc[sector.name] = {
             '1d': sector.performance_1d,
             '1w': sector.performance_1w,

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSidebar } from '@/app/layout';
 import { 
   Home, 
   TrendingUp, 
@@ -41,7 +42,7 @@ const menuItems = [
 ];
 
 export default function SideNav() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const pathname = usePathname();
 

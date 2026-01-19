@@ -155,13 +155,13 @@ export default function SectorTable() {
             </tr>
           </thead>
           <tbody>
-            {getSortedSectors().map((sector) => {
+            {getSortedSectors().map((sector, index) => {
                 const performance = getPerformanceValue(sector);
                 const signal = getSignal(performance);
                 const isPositive = performance >= 0;
                 
                 return (
-                  <tr key={sector.name} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={`${sector.name}-${index}`} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="py-2 px-2">
                       <Link 
                         href={`/sectors/${encodeURIComponent(sector.name)}`}
@@ -171,7 +171,7 @@ export default function SectorTable() {
                       </Link>
                     </td>
                     <td className={`py-2 px-2 text-right font-semibold ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {isPositive ? '+' : ''}{performance.toFixed(2)}%
+                      {isPositive ? '+' : ''}{(performance || 0).toFixed(2)}%
                     </td>
                     <td className="py-2 px-2 text-right">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
